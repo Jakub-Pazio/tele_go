@@ -82,3 +82,22 @@ func TestSetParity(t *testing.T) {
 		}
 	})
 }
+
+func TestCorrectData(t *testing.T) {
+	t.Run("Data is good so dont change", func(t *testing.T) {
+		valueToChange := uint16(0x1E78)
+
+		CorrectData(&valueToChange)
+		if valueToChange != uint16(0x1E78) {
+			t.Error("Data corrected for no reason")
+		}
+	})
+	t.Run("Data is bad, change", func(t *testing.T) {
+		valueToChange := uint16(0x1E70)
+
+		CorrectData(&valueToChange)
+		if valueToChange != uint16(0x1E78) {
+			t.Errorf("got %d want 7792", valueToChange)
+		}
+	})
+}

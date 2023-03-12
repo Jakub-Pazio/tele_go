@@ -43,6 +43,14 @@ func SetBit(value *uint16, possition int) error {
 
 	return nil
 }
+func FlipBit(value *uint16, possition int) error {
+	if possition > 15 {
+		return errors.New("wrong possition")
+	}
+	*value = *value ^ uint16(0x1)<<possition
+
+	return nil
+}
 
 // I count bits from right to left
 // We want to encode data on bits with numbers:
@@ -101,4 +109,17 @@ func SetParity(input uint8) uint16 {
 	//	}
 	//}
 	return input16
+}
+
+func CorrectData(input *uint16) {
+	indexToCorrect := 0
+	for i := 0; i < 16; i++ {
+		on, _ := CheckBit16(*input, i)
+		if on {
+			indexToCorrect = indexToCorrect ^ i
+		}
+	}
+	if indexToCorrect != 0 {
+		FlipBit(input, indexToCorrect)
+	}
 }
