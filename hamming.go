@@ -95,19 +95,6 @@ func SetParity(input uint8) uint16 {
 		}
 	}
 
-	// Setting parity bits in our result
-	//for i, v := range ParityIndexes {
-	//	sum := 0
-	//	for _, bitIndex := range v {
-	//		isSet, _ := CheckBit16(input16, bitIndex)
-	//		if isSet {
-	//			sum++
-	//		}
-	//		if sum%2 == 1 {
-	//			SetBit(&input16, int(math.Pow(2, float64(i))))
-	//		}
-	//	}
-	//}
 	return input16
 }
 
