@@ -9,7 +9,7 @@ func TestCheckBit(t *testing.T) {
 		firstBitOn := uint8(0x1)
 
 		want := true
-		got, err := CheckBit(firstBitOn, 0)
+		got, err := CheckBit8(firstBitOn, 0)
 
 		if got != want {
 			t.Errorf("wanted %t got %t", want, got)
@@ -23,7 +23,7 @@ func TestCheckBit(t *testing.T) {
 		firstBitOff := uint8(0xFE)
 
 		want := false
-		got, err := CheckBit(firstBitOff, 0)
+		got, err := CheckBit8(firstBitOff, 0)
 
 		if got != want {
 			t.Errorf("wanted %t got %t", want, got)
@@ -63,6 +63,19 @@ func TestEncode(t *testing.T) {
 
 		want := uint16(0x1E68)
 		got := EncodeData(valueToEncode)
+
+		if got != want {
+			t.Errorf("wanted %d got %d", want, got)
+		}
+	})
+}
+
+func TestSetParity(t *testing.T) {
+	t.Run("Test ParityBits setting", func(t *testing.T) {
+		valueToEncode := uint8(0xF7)
+
+		want := uint16(0x1E78)
+		got := SetParity(valueToEncode)
 
 		if got != want {
 			t.Errorf("wanted %d got %d", want, got)
