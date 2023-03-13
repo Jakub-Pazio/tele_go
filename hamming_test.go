@@ -100,4 +100,20 @@ func TestCorrectData(t *testing.T) {
 			t.Errorf("got %d want 7792", valueToChange)
 		}
 	})
+	t.Run("Test flip for data value 1", func(t *testing.T) {
+		value := uint8(0x1)
+		encodedValue := EncodeData(value)
+		if encodedValue != uint16(0x8) {
+			t.Errorf("got %d want 8", encodedValue)
+		}
+		afterHamming := SetParity(value)
+		if afterHamming != uint16(0xE) {
+			t.Errorf("got %d wanted 14", afterHamming)
+		}
+		bitFlipped := uint16(0x20E)
+		CorrectData(&bitFlipped)
+		if bitFlipped != uint16(0xE) {
+			t.Errorf("got %d wanted 14", bitFlipped)
+		}
+	})
 }
