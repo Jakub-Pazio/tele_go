@@ -83,6 +83,22 @@ func TestSetParity(t *testing.T) {
 	})
 }
 
+func TestDecoding(t *testing.T) {
+	t.Run("Decode good data", func(t *testing.T) {
+		val := uint8(0x1)
+		valToDecode := SetParity(val)
+
+		if valToDecode != uint16(0xE) {
+			t.Errorf("Error in encoding, wanted 14 got %d", valToDecode)
+		}
+		got := DecodeData(valToDecode)
+		want := uint8(0x1)
+		if got != want {
+			t.Errorf("wanted %d got %d", want, got)
+		}
+	})
+}
+
 func TestCorrectData(t *testing.T) {
 	t.Run("Data is good so dont change", func(t *testing.T) {
 		valueToChange := uint16(0x1E78)

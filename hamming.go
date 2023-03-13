@@ -43,6 +43,15 @@ func SetBit(value *uint16, possition int) error {
 
 	return nil
 }
+
+func SetBit8(value *uint8, possition int) error {
+	if possition > 7 {
+		return errors.New("wrong possition")
+	}
+	*value = *value | uint8(0x1)<<possition
+
+	return nil
+}
 func FlipBit(value *uint16, possition int) error {
 	if possition > 15 {
 		return errors.New("wrong possition")
@@ -80,6 +89,28 @@ func EncodeData(input uint8) uint16 {
 	}
 	return result
 }
+
+func DecodeData(intput uint16) uint8 {
+	result := uint8(0)
+	bitMapping := [8]int{
+		0: 3,
+		1: 5,
+		2: 6,
+		3: 7,
+		4: 9,
+		5: 10,
+		6: 11,
+		7: 12,
+	}
+	for i, v := range bitMapping {
+		isSet, _ := CheckBit16(intput, v)
+		if isSet {
+			SetBit8(&result, i)
+		}
+	}
+	return result
+}
+
 func SetParity(input uint8) uint16 {
 	input16 := EncodeData(input)
 	for i, indexArray := range ParityIndexes {
