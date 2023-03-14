@@ -175,6 +175,7 @@ func readEncrypted(name string) []uint16 {
 	resultNumber := make([]uint16, 0)
 	for i := 0; i < len(array)/2; i++ {
 		number := binary.BigEndian.Uint16(array[i*2 : i*2+2])
+		CorrectData(&number)
 		resultNumber = append(resultNumber, number)
 	}
 	return resultNumber
