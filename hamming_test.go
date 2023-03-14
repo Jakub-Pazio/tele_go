@@ -131,5 +131,23 @@ func TestCorrectData(t *testing.T) {
 		if bitFlipped != uint16(0xE) {
 			t.Errorf("got %d wanted 14", bitFlipped)
 		}
+
+		writeToFile("we", encryptFile("./test.txt"))
+
+		fromFile := readEncrypted("")
+		decryptedArray := make([]uint8, 0)
+
+		for i := 0; i < len(fromFile); i++ {
+			decryptedArray = append(decryptedArray, DecodeData(fromFile[i]))
+		}
+
+		// decrypted := DecodeData(fromFile)
+		// decArray := []uint8{decrypted}
+		writeDecryptedToFile("", decryptedArray)
+		//fmt.Printf("decrypted: %x\n", decryptedArray[])
 	})
+}
+
+func TestFileRead(t *testing.T) {
+
 }

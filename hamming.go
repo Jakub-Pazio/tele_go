@@ -1,8 +1,11 @@
 package zad1
 
 import (
+	"encoding/binary"
 	"errors"
+	"fmt"
 	"math"
+	"os"
 )
 
 var ParityIndexes = [4][8]int{
@@ -139,5 +142,48 @@ func CorrectData(input *uint16) {
 	}
 	if indexToCorrect != 0 {
 		FlipBit(input, indexToCorrect)
+	}
+}
+
+func readFileToVec(name string) []uint8 {
+	array, _ := os.ReadFile("./test.txt")
+	fmt.Printf("%d\n", len(array))
+	return array
+}
+
+func encryptFile(name string) []uint16 {
+	fromFileArray := readFileToVec(name)
+	retsultArray := make([]uint16, 0)
+
+	for _, v := range fromFileArray {
+		retsultArray = append(retsultArray, SetParity(v))
+	}
+
+	return retsultArray
+}
+
+func writeToFile(name string, data []uint16) {
+	f, _ := os.OpenFile("./encoded.txt", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	err := binary.Write(f, binary.BigEndian, data)
+	if err != nil {
+		fmt.Printf("%s\n", err.Error())
+	}
+}
+
+func readEncrypted(name string) []uint16 {
+	array, _ := os.ReadFile("./encoded.txt")
+	resultNumber := make([]uint16, 0)
+	for i := 0; i < len(array)/2; i++ {
+		number := binary.BigEndian.Uint16(array[i*2 : i*2+2])
+		resultNumber = append(resultNumber, number)
+	}
+	return resultNumber
+}
+
+func writeDecryptedToFile(name string, data []uint8) {
+	f, _ := os.OpenFile("./decoded.txt", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	err := binary.Write(f, binary.BigEndian, data)
+	if err != nil {
+		fmt.Printf("%s\n", err.Error())
 	}
 }
