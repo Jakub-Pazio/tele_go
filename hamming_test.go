@@ -1,6 +1,7 @@
 package zad1
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -132,7 +133,7 @@ func TestCorrectData(t *testing.T) {
 			t.Errorf("got %d wanted 14", bitFlipped)
 		}
 
-		writeToFile("we", encryptFile("./test.txt"))
+		//writeToFile("we", encryptFile("./test.txt"))
 
 		fromFile := readEncrypted("")
 		decryptedArray := make([]uint8, 0)
@@ -145,6 +146,9 @@ func TestCorrectData(t *testing.T) {
 		// decArray := []uint8{decrypted}
 		writeDecryptedToFile("", decryptedArray)
 		//fmt.Printf("decrypted: %x\n", decryptedArray[])
+
+		linearResult := EncodeTo16Bits(0x10)
+		fmt.Printf("%d\n", linearResult)
 	})
 }
 
