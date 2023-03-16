@@ -144,11 +144,19 @@ func TestCorrectData(t *testing.T) {
 
 		// decrypted := DecodeData(fromFile)
 		// decArray := []uint8{decrypted}
-		writeDecryptedToFile("", decryptedArray)
-		//fmt.Printf("decrypted: %x\n", decryptedArray[])
+		// writeDecryptedToFile("", decryptedArray)
+		// //fmt.Printf("decrypted: %x\n", decryptedArray[])
 
-		linearResult := EncodeTo16Bits(0x10)
-		fmt.Printf("%d\n", linearResult)
+		// linearResult := EncodeTo16Bits(0x4)
+		// fmt.Printf("%d\n", linearResult)
+
+		// decodedResult := DecodeTo8Bits(linearResult)
+		// fmt.Printf("%d\n", decodedResult)
+
+		stupidTest := uint8(0x5)
+		stupidEncoded := StupidEncoder(stupidTest)
+		stupidDecrypted := StupidDecoder(stupidEncoded)
+		fmt.Printf("%d\n%d\n", stupidEncoded, stupidDecrypted)
 	})
 }
 
