@@ -1,11 +1,10 @@
-package zad1
+package correction
 
 import (
 	"fmt"
 	"math/bits"
 )
 
-// Każdy bit można powtarzać 5 krotnie i będzie ok.
 var DecodingMatrix = [8]uint16{
 	uint16(0xF080), // {1, 1, 1, 1, 0, 0, 0, 0,   1, 0, 0, 0, 0, 0, 0, 0}
 	uint16(0xCC40), // {1, 1, 0, 0, 1, 1, 0, 0,   0, 1, 0, 0, 0, 0, 0, 0}
@@ -47,6 +46,7 @@ var CodingMatrix = [16]uint8{
 	uint8(0x1),
 }
 
+// Does not work
 func EncodeTo16Bits(input uint8) uint16 {
 	result := uint16(0x0)
 
@@ -65,7 +65,7 @@ func EncodeTo16Bits(input uint8) uint16 {
 	return result
 }
 
-// TODO: Fix this couse its not working well :/
+// Does not work
 func DecodeTo8Bits(input uint16) uint8 {
 	result := uint8(input & 255)
 	//input >>= 8
@@ -84,7 +84,7 @@ func DecodeTo8Bits(input uint16) uint8 {
 	return result
 }
 
-func StupidEncoder(input uint8) uint64 {
+func RepeteEncoder(input uint8) uint64 {
 	result := uint64(0x0)
 
 	for i := 0; i < 8; i++ {
@@ -97,7 +97,7 @@ func StupidEncoder(input uint8) uint64 {
 	return result
 }
 
-func StupidDecoder(input uint64) uint8 {
+func RepeteDecoder(input uint64) uint8 {
 	result := uint8(0x0)
 	for i := 0; i < 8; i++ {
 		temp := uint8(input)

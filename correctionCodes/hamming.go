@@ -1,4 +1,4 @@
-package zad1
+package correction
 
 import (
 	"encoding/binary"
@@ -146,12 +146,11 @@ func CorrectData(input *uint16) {
 }
 
 func readFileToVec(name string) []uint8 {
-	array, _ := os.ReadFile("./test.txt")
-	fmt.Printf("%d\n", len(array))
+	array, _ := os.ReadFile(name)
 	return array
 }
 
-func encryptFile(name string) []uint16 {
+func EncryptFile(name string) []uint16 {
 	fromFileArray := readFileToVec(name)
 	retsultArray := make([]uint16, 0)
 
@@ -162,16 +161,27 @@ func encryptFile(name string) []uint16 {
 	return retsultArray
 }
 
-func writeToFile(name string, data []uint16) {
-	f, _ := os.OpenFile("./encoded.txt", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+func DecryptFile(name string) []uint8 {
+	fromFileArray := ReadEncryptedFromFile(name)
+	decryptedArray := make([]uint8, 0)
+
+	for i := 0; i < len(fromFileArray); i++ {
+		decryptedArray = append(decryptedArray, DecodeData(fromFileArray[i]))
+	}
+
+	return decryptedArray
+}
+
+func WriteEncryptedToFile(name string, data []uint16) {
+	f, _ := os.OpenFile(name, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	err := binary.Write(f, binary.BigEndian, data)
 	if err != nil {
 		fmt.Printf("%s\n", err.Error())
 	}
 }
 
-func readEncrypted(name string) []uint16 {
-	array, _ := os.ReadFile("./encoded.txt")
+func ReadEncryptedFromFile(name string) []uint16 {
+	array, _ := os.ReadFile(name)
 	resultNumber := make([]uint16, 0)
 	for i := 0; i < len(array)/2; i++ {
 		number := binary.BigEndian.Uint16(array[i*2 : i*2+2])
@@ -181,8 +191,8 @@ func readEncrypted(name string) []uint16 {
 	return resultNumber
 }
 
-func writeDecryptedToFile(name string, data []uint8) {
-	f, _ := os.OpenFile("./decoded.txt", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+func WriteDecryptedToFile(name string, data []uint8) {
+	f, _ := os.OpenFile(name, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	err := binary.Write(f, binary.BigEndian, data)
 	if err != nil {
 		fmt.Printf("%s\n", err.Error())

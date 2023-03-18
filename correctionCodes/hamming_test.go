@@ -1,4 +1,4 @@
-package zad1
+package correction
 
 import (
 	"fmt"
@@ -135,7 +135,7 @@ func TestCorrectData(t *testing.T) {
 
 		//writeToFile("we", encryptFile("./test.txt"))
 
-		fromFile := readEncrypted("")
+		fromFile := ReadEncryptedFromFile("")
 		decryptedArray := make([]uint8, 0)
 
 		for i := 0; i < len(fromFile); i++ {
@@ -154,8 +154,8 @@ func TestCorrectData(t *testing.T) {
 		// fmt.Printf("%d\n", decodedResult)
 
 		stupidTest := uint8(0x5)
-		stupidEncoded := StupidEncoder(stupidTest)
-		stupidDecrypted := StupidDecoder(stupidEncoded)
+		stupidEncoded := RepeteEncoder(stupidTest)
+		stupidDecrypted := RepeteDecoder(stupidEncoded)
 		fmt.Printf("%d\n%d\n", stupidEncoded, stupidDecrypted)
 	})
 }
