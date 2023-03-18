@@ -84,7 +84,7 @@ func DecodeTo8Bits(input uint16) uint8 {
 	return result
 }
 
-func RepeteEncoder(input uint8) uint64 {
+func RepeatEncoder(input uint8) uint64 {
 	result := uint64(0x0)
 
 	for i := 0; i < 8; i++ {
@@ -97,7 +97,7 @@ func RepeteEncoder(input uint8) uint64 {
 	return result
 }
 
-func RepeteDecoder(input uint64) uint8 {
+func RepeatDecoder(input uint64) uint8 {
 	result := uint8(0x0)
 	for i := 0; i < 8; i++ {
 		temp := uint8(input)
