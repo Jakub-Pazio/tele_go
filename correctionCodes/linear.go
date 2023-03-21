@@ -1,7 +1,6 @@
 package correction
 
 import (
-	"fmt"
 	"math/bits"
 )
 
@@ -46,7 +45,7 @@ var CodingMatrix = [16]uint8{
 	uint8(0x1),  // to chyba jest niepotrzebne
 }
 
-// Does not work
+// works
 func EncodeTo16Bits(input uint8) uint16 {
 	result := uint16(input)
 	result <<= 8
@@ -66,14 +65,14 @@ func EncodeTo16Bits(input uint8) uint16 {
 	return result
 }
 
-// Does not work
+// works
 func DecodeTo8Bits(input uint16) uint8 {
-	checkError := uint8(input & 255)
+	//checkError := uint8(input & 255)
 	//input >>= 8
 	result := uint8(input >> 8 & 255)
 	//checkError = bits.Reverse8(checkError)
 	//isError := uint8(0x0)
-	fmt.Printf("res: %d check: %d\n", result, checkError)
+	//fmt.Printf("res: %d check: %d\n", result, checkError)
 
 	for i := 0; i < 8; i++ {
 		//xored := DecodingMatrix[7-i] & input
@@ -81,6 +80,8 @@ func DecodeTo8Bits(input uint16) uint8 {
 		//isOdd := numberOfBitsUp & 0x1
 		//fmt.Printf("%d\n", bits.OnesCount16(xored))
 	}
+	mistakeMatix := LinerCheck(input)
+	CorrectMistake(&result, mistakeMatix)
 
 	return result
 }
@@ -90,9 +91,9 @@ func LinerCheck(input uint16) uint8 {
 	for i := 0; i < 8; i++ {
 		multiMatrix := bits.OnesCount16(input & DecodingMatrix[i])
 		parity := multiMatrix % 2
-		fmt.Printf("matrix check %d: %d\n", i, parity)
+		//fmt.Printf("matrix check %d: %d\n", i, parity)
 		if parity != 0 {
-			fmt.Printf("sth is wrong\n")
+			//fmt.Printf("sth is wrong\n")
 			result |= 0x1 << (7 - uint8(i))
 		}
 		// trzeba zobaczyć w macierzy transponowanej
@@ -109,8 +110,8 @@ func CorrectMistake(input *uint8, mistake uint8) {
 			*input ^= 0x1 << uint8(7-i)
 		}
 	}
-	for i := 0; i < 8; i++ {
-		for j := i; j < 8; j++ {
+	for i := 0; i < 16; i++ {
+		for j := i; j < 16; j++ {
 			mistakeMask := CodingMatrix[i] ^ CodingMatrix[j]
 			if mistakeMask == mistake {
 				*input ^= 0x1 << uint8(7-i)
@@ -138,7 +139,7 @@ func RepeatDecoder(input uint64) uint8 {
 	result := uint8(0x0)
 	for i := 0; i < 8; i++ {
 		temp := uint8(input)
-		fmt.Printf("%d\n", bits.OnesCount8(temp))
+		//fmt.Printf("%d\n", bits.OnesCount8(temp))
 		if bits.OnesCount8(temp) > 4 {
 			result |= uint8(0x1) << i
 		}

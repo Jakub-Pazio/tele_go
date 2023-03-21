@@ -29,20 +29,27 @@ func main() {
 	decodedLinear := correction.DecodeTo8Bits(linear)
 	fmt.Printf("%d\n", decodedLinear)
 
-	checkMatrix := correction.LinerCheck(linear)
-	fmt.Printf("%d\n", checkMatrix)
+	oneBitFliped := uint16(33596)
+	twoBitsFlipedBad := uint16(33597)
+	twoBitsFliped := uint16(49980)
 
-	checkMatrixFake := correction.LinerCheck(572)
-	fmt.Printf("%d\n", checkMatrixFake)
+	fmt.Printf("%d %d %d\n", correction.DecodeTo8Bits(oneBitFliped),
+		correction.DecodeTo8Bits(twoBitsFliped),
+		correction.DecodeTo8Bits(twoBitsFlipedBad))
+	// checkMatrix := correction.LinerCheck(linear)
+	// fmt.Printf("%d\n", checkMatrix)
 
-	checkMatrixFake2 := correction.LinerCheck(1596)
-	fmt.Printf("%d\n", checkMatrixFake2)
-	// checkMatrixFake := correction.LinerCheck(24690)
+	// checkMatrixFake := correction.LinerCheck(572)
 	// fmt.Printf("%d\n", checkMatrixFake)
 
-	flippedValue := uint8(0x6)
-	correction.CorrectMistake(&flippedValue, checkMatrixFake2)
-	fmt.Printf("%d\n", flippedValue)
+	// checkMatrixFake2 := correction.LinerCheck(1596)
+	// fmt.Printf("%d\n", checkMatrixFake2)
+	// // checkMatrixFake := correction.LinerCheck(24690)
+	// // fmt.Printf("%d\n", checkMatrixFake)
+
+	// flippedValue := uint8(0x6)
+	// correction.CorrectMistake(&flippedValue, checkMatrixFake2)
+	// fmt.Printf("%d\n", flippedValue)
 
 	if encode {
 		data := correction.EncryptFile(inputFile)
