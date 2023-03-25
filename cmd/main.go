@@ -28,11 +28,11 @@ func main() {
 	flag.Parse()
 
 	if hamming {
-		encodef = correction.SetParity
-		decodef = correction.DecodeData
+		encodef = correction.HammingEncode
+		decodef = correction.HammingDecode
 	} else if matrix {
-		encodef = correction.EncodeTo16Bits
-		decodef = correction.DecodeTo8Bits
+		encodef = correction.MatrixEncoding
+		decodef = correction.MatrixDecoding
 	} else {
 		os.Exit(1)
 	}

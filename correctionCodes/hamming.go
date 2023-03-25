@@ -38,7 +38,7 @@ func CheckBit16(value uint16, possition int) (bool, error) {
 	return false, nil
 }
 
-func SetBit(value *uint16, possition int) error {
+func SetBit16(value *uint16, possition int) error {
 	if possition > 15 {
 		return errors.New("wrong possition")
 	}
@@ -55,7 +55,7 @@ func SetBit8(value *uint8, possition int) error {
 
 	return nil
 }
-func FlipBit(value *uint16, possition int) error {
+func FlipBit16(value *uint16, possition int) error {
 	if possition > 15 {
 		return errors.New("wrong possition")
 	}
@@ -72,7 +72,7 @@ func FlipBit(value *uint16, possition int) error {
 //
 // Bits 1 2 4 8 are left for parity check; Bit 0 for whole block check
 // Other bits (13, 14, 15) are not needed and will have 0 assigned
-func EncodeData(input uint8) uint16 {
+func preHammingEncode(input uint8) uint16 {
 	result := uint16(0)
 	bitMapping := [8]int{
 		0: 3,
@@ -87,13 +87,32 @@ func EncodeData(input uint8) uint16 {
 	for i, v := range bitMapping {
 		isSet, _ := CheckBit8(input, i)
 		if isSet {
-			SetBit(&result, v)
+			SetBit16(&result, v)
 		}
 	}
 	return result
 }
 
-func DecodeData(intput uint16) uint8 {
+func HammingEncode(input uint8) uint16 {
+	input16 := preHammingEncode(input)
+	for i, indexArray := range ParityIndexes {
+		sum := 0
+		for _, v := range indexArray {
+			isSet, _ := CheckBit16(input16, v)
+			if isSet {
+				sum++
+			}
+		}
+		if sum%2 == 1 {
+			SetBit16(&input16, int(math.Pow(2, float64(i))))
+		}
+	}
+
+	return input16
+}
+
+func HammingDecode(intput uint16) uint8 {
+	HammingDataCorrect(&intput)
 	result := uint8(0)
 	bitMapping := [8]int{
 		0: 3,
@@ -114,25 +133,7 @@ func DecodeData(intput uint16) uint8 {
 	return result
 }
 
-func SetParity(input uint8) uint16 {
-	input16 := EncodeData(input)
-	for i, indexArray := range ParityIndexes {
-		sum := 0
-		for _, v := range indexArray {
-			isSet, _ := CheckBit16(input16, v)
-			if isSet {
-				sum++
-			}
-		}
-		if sum%2 == 1 {
-			SetBit(&input16, int(math.Pow(2, float64(i))))
-		}
-	}
-
-	return input16
-}
-
-func CorrectData(input *uint16) {
+func HammingDataCorrect(input *uint16) {
 	indexToCorrect := 0
 	for i := 0; i < 16; i++ {
 		on, _ := CheckBit16(*input, i)
@@ -141,7 +142,7 @@ func CorrectData(input *uint16) {
 		}
 	}
 	if indexToCorrect != 0 {
-		FlipBit(input, indexToCorrect)
+		FlipBit16(input, indexToCorrect)
 	}
 }
 

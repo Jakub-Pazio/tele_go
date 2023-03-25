@@ -4,7 +4,7 @@ import (
 	"math/bits"
 )
 
-var DecodingMatrix = [8]uint16{
+var EncodingMatixFull = [8]uint16{
 	uint16(0xF080), // {1, 1, 1, 1, 0, 0, 0, 0,   1, 0, 0, 0, 0, 0, 0, 0}
 	uint16(0xCC40), // {1, 1, 0, 0, 1, 1, 0, 0,   0, 1, 0, 0, 0, 0, 0, 0}
 	uint16(0xAA20), // {1, 0, 1, 0, 1, 0, 1, 0,   0, 0, 1, 0, 0, 0, 0, 0}
@@ -15,7 +15,7 @@ var DecodingMatrix = [8]uint16{
 	uint16(0xE701), // {1, 1, 1, 0, 0, 1, 1, 1,   0, 0, 0, 0, 0, 0, 0, 1}
 }
 
-var DecodingMatrix2 = [8]uint8{
+var EncodingMatrixPart = [8]uint8{
 	uint8(0xF0), // {1, 1, 1, 1, 0, 0, 0, 0, |  1, 0, 0, 0, 0, 0, 0, 0}
 	uint8(0xCC), // {1, 1, 0, 0, 1, 1, 0, 0, |  0, 1, 0, 0, 0, 0, 0, 0}
 	uint8(0xAA), // {1, 0, 1, 0, 1, 0, 1, 0, |  0, 0, 1, 0, 0, 0, 0, 0}
@@ -26,7 +26,7 @@ var DecodingMatrix2 = [8]uint8{
 	uint8(0xE7), // {1, 1, 1, 0, 0, 1, 1, 1, |  0, 0, 0, 0, 0, 0, 0, 1}
 }
 
-var CodingMatrix = [16]uint8{
+var DecodingMatrix = [16]uint8{
 	uint8(0xED),
 	uint8(0xDB),
 	uint8(0xAB),
@@ -35,65 +35,46 @@ var CodingMatrix = [16]uint8{
 	uint8(0x55),
 	uint8(0x33),
 	uint8(0xF),
-	uint8(0x80), // to chyba jest niepotrzebne
-	uint8(0x40), // to chyba jest niepotrzebne
-	uint8(0x20), // to chyba jest niepotrzebne
-	uint8(0x10), // to chyba jest niepotrzebne
-	uint8(0x8),  // to chyba jest niepotrzebne
-	uint8(0x4),  // to chyba jest niepotrzebne
-	uint8(0x2),  // to chyba jest niepotrzebne
-	uint8(0x1),  // to chyba jest niepotrzebne
+	uint8(0x80),
+	uint8(0x40),
+	uint8(0x20),
+	uint8(0x10),
+	uint8(0x8),
+	uint8(0x4),
+	uint8(0x2),
+	uint8(0x1),
 }
 
-// works
-func EncodeTo16Bits(input uint8) uint16 {
+func MatrixEncoding(input uint8) uint16 {
 	result := uint16(input)
 	result <<= 8
 
 	for i := 0; i < 8; i++ {
-		xored := DecodingMatrix2[i] & input
+		xored := EncodingMatrixPart[i] & input
 		numberOfBitsUp := bits.OnesCount8(xored)
 		isOdd := numberOfBitsUp & 0x1
-		//fmt.Printf("%d\n", isOdd)
-
-		// TODO: Flip corresponding bit in the result
 		if isOdd != 0 {
-			SetBit(&result, 7-i)
+			SetBit16(&result, 7-i)
 		}
 	}
 
 	return result
 }
 
-// works
-func DecodeTo8Bits(input uint16) uint8 {
-	//checkError := uint8(input & 255)
-	//input >>= 8
+func MatrixDecoding(input uint16) uint8 {
 	result := uint8(input >> 8 & 255)
-	//checkError = bits.Reverse8(checkError)
-	//isError := uint8(0x0)
-	//fmt.Printf("res: %d check: %d\n", result, checkError)
-
-	for i := 0; i < 8; i++ {
-		//xored := DecodingMatrix[7-i] & input
-		//numberOfBitsUp := bits.OnesCount8(xored)
-		//isOdd := numberOfBitsUp & 0x1
-		//fmt.Printf("%d\n", bits.OnesCount16(xored))
-	}
-	mistakeMatix := LinerCheck(input)
-	CorrectMistake(&result, mistakeMatix)
+	mistakeMatix := ErrorVector(input)
+	MatrixErrorCorrection(&result, mistakeMatix)
 
 	return result
 }
 
-func LinerCheck(input uint16) uint8 {
+func ErrorVector(input uint16) uint8 {
 	result := uint8(0x0)
 	for i := 0; i < 8; i++ {
-		multiMatrix := bits.OnesCount16(input & DecodingMatrix[i])
+		multiMatrix := bits.OnesCount16(input & EncodingMatixFull[i])
 		parity := multiMatrix % 2
-		//fmt.Printf("matrix check %d: %d\n", i, parity)
 		if parity != 0 {
-			//fmt.Printf("sth is wrong\n")
 			result |= 0x1 << (7 - uint8(i))
 		}
 		// trzeba zobaczyć w macierzy transponowanej
@@ -104,15 +85,15 @@ func LinerCheck(input uint16) uint8 {
 	return result
 }
 
-func CorrectMistake(input *uint8, mistake uint8) {
+func MatrixErrorCorrection(input *uint8, mistake uint8) {
 	for i := 0; i < 8; i++ {
-		if mistake == CodingMatrix[i] {
+		if mistake == DecodingMatrix[i] {
 			*input ^= 0x1 << uint8(7-i)
 		}
 	}
 	for i := 0; i < 16; i++ {
 		for j := i; j < 16; j++ {
-			mistakeMask := CodingMatrix[i] ^ CodingMatrix[j]
+			mistakeMask := DecodingMatrix[i] ^ DecodingMatrix[j]
 			if mistakeMask == mistake {
 				*input ^= 0x1 << uint8(7-i)
 				*input ^= 0x1 << uint8(7-j)

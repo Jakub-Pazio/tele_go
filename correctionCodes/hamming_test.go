@@ -39,7 +39,7 @@ func TestSetBit(t *testing.T) {
 		firstBitoff := uint16(0xFFE)
 
 		want := uint(0xFFF)
-		SetBit(&firstBitoff, 0)
+		SetBit16(&firstBitoff, 0)
 
 		if uint(firstBitoff) != want {
 			t.Errorf("wanted %d got %d", want, firstBitoff)
@@ -49,7 +49,7 @@ func TestSetBit(t *testing.T) {
 		firstBiton := uint16(0xDDB)
 
 		want := uint16(0xDDB)
-		SetBit(&firstBiton, 0)
+		SetBit16(&firstBiton, 0)
 
 		if firstBiton != want {
 			t.Errorf("wanted %d got %d", want, firstBiton)
@@ -62,7 +62,7 @@ func TestEncode(t *testing.T) {
 		valueToEncode := uint8(0xF7)
 
 		want := uint16(0x1E68)
-		got := EncodeData(valueToEncode)
+		got := preHammingEncode(valueToEncode)
 
 		if got != want {
 			t.Errorf("wanted %d got %d", want, got)
@@ -75,7 +75,7 @@ func TestSetParity(t *testing.T) {
 		valueToEncode := uint8(0xF7)
 
 		want := uint16(0x1E78)
-		got := SetParity(valueToEncode)
+		got := HammingEncode(valueToEncode)
 
 		if got != want {
 			t.Errorf("wanted %d got %d", want, got)
@@ -86,12 +86,12 @@ func TestSetParity(t *testing.T) {
 func TestDecoding(t *testing.T) {
 	t.Run("Decode good data", func(t *testing.T) {
 		val := uint8(0x1)
-		valToDecode := SetParity(val)
+		valToDecode := HammingEncode(val)
 
 		if valToDecode != uint16(0xE) {
 			t.Errorf("Error in encoding, wanted 14 got %d", valToDecode)
 		}
-		got := DecodeData(valToDecode)
+		got := HammingDecode(valToDecode)
 		want := uint8(0x1)
 		if got != want {
 			t.Errorf("wanted %d got %d", want, got)
@@ -103,7 +103,7 @@ func TestCorrectData(t *testing.T) {
 	t.Run("Data is good so dont change", func(t *testing.T) {
 		valueToChange := uint16(0x1E78)
 
-		CorrectData(&valueToChange)
+		HammingDataCorrect(&valueToChange)
 		if valueToChange != uint16(0x1E78) {
 			t.Error("Data corrected for no reason")
 		}
@@ -111,23 +111,23 @@ func TestCorrectData(t *testing.T) {
 	t.Run("Data is bad, change", func(t *testing.T) {
 		valueToChange := uint16(0x1E70)
 
-		CorrectData(&valueToChange)
+		HammingDataCorrect(&valueToChange)
 		if valueToChange != uint16(0x1E78) {
 			t.Errorf("got %d want 7792", valueToChange)
 		}
 	})
 	t.Run("Test flip for data value 1", func(t *testing.T) {
 		value := uint8(0x1)
-		encodedValue := EncodeData(value)
+		encodedValue := preHammingEncode(value)
 		if encodedValue != uint16(0x8) {
 			t.Errorf("got %d want 8", encodedValue)
 		}
-		afterHamming := SetParity(value)
+		afterHamming := HammingEncode(value)
 		if afterHamming != uint16(0xE) {
 			t.Errorf("got %d wanted 14", afterHamming)
 		}
 		bitFlipped := uint16(0x20E)
-		CorrectData(&bitFlipped)
+		HammingDataCorrect(&bitFlipped)
 		if bitFlipped != uint16(0xE) {
 			t.Errorf("got %d wanted 14", bitFlipped)
 		}
