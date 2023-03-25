@@ -150,23 +150,23 @@ func readFileToVec(name string) []uint8 {
 	return array
 }
 
-func EncryptFile(name string) []uint16 {
+func EncryptFile(name string, encoding func(uint8) uint16) []uint16 {
 	fromFileArray := readFileToVec(name)
 	retsultArray := make([]uint16, 0)
 
 	for _, v := range fromFileArray {
-		retsultArray = append(retsultArray, SetParity(v))
+		retsultArray = append(retsultArray, encoding(v))
 	}
 
 	return retsultArray
 }
 
-func DecryptFile(name string) []uint8 {
+func DecryptFile(name string, decoding func(uint16) uint8) []uint8 {
 	fromFileArray := ReadEncryptedFromFile(name)
 	decryptedArray := make([]uint8, 0)
 
 	for i := 0; i < len(fromFileArray); i++ {
-		decryptedArray = append(decryptedArray, DecodeData(fromFileArray[i]))
+		decryptedArray = append(decryptedArray, decoding(fromFileArray[i]))
 	}
 
 	return decryptedArray
@@ -185,7 +185,7 @@ func ReadEncryptedFromFile(name string) []uint16 {
 	resultNumber := make([]uint16, 0)
 	for i := 0; i < len(array)/2; i++ {
 		number := binary.BigEndian.Uint16(array[i*2 : i*2+2])
-		CorrectData(&number)
+		//CorrectData(&number)
 		resultNumber = append(resultNumber, number)
 	}
 	return resultNumber
