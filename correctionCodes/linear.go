@@ -77,10 +77,6 @@ func ErrorVector(input uint16) uint8 {
 		if parity != 0 {
 			result |= 0x1 << (7 - uint8(i))
 		}
-		// trzeba zobaczyć w macierzy transponowanej
-		// która z tych wartości odpowiada blędowi i ją flipnąć
-		// to działa dla będów 1 bitowych
-		// dla błędów 2 bitowych inaczej jakoś
 	}
 	return result
 }
@@ -95,6 +91,8 @@ func MatrixErrorCorrection(input *uint8, mistake uint8) {
 		for j := i; j < 16; j++ {
 			mistakeMask := DecodingMatrix[i] ^ DecodingMatrix[j]
 			if mistakeMask == mistake {
+				// This is trick, if you get i or j over 8 you will move 1 so much you'll get 0
+				// Thought it's bug, but it's feature
 				*input ^= 0x1 << uint8(7-i)
 				*input ^= 0x1 << uint8(7-j)
 			}
